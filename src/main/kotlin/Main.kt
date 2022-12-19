@@ -51,7 +51,7 @@ fun BFSRobots(bluePrint: BluePrint, timeLimit: Int): Int {
     var bestGeodeCount = 0
     while (stack.isNotEmpty()) {
         val currentState = stack.pop()
-        if(calculateMaxGeodeNumberPossible(currentState) >= bestGeodeCount && (calculateMaxObsidianNumberPossible(currentState) >= bluePrint.geodeRobotCostObsidian || currentState.obsidianRobots != 0)) {
+        if(calculateMaxGeodeNumberPossible(currentState) >= bestGeodeCount) {
             val newStates = computeNewStates(currentState, bluePrint)
             if (newStates.isEmpty()) {
                 if (currentState.geode > bestGeodeCount) {
@@ -72,16 +72,6 @@ fun calculateMaxGeodeNumberPossible(state : RobotState): Int{
         numberOfGeodesPossible += geodeRobots + i
     }
     return numberOfGeodesPossible
-}
-
-fun calculateMaxObsidianNumberPossible(state : RobotState): Int{
-    val obsidianRobots = state.obsidianRobots
-    val timeLeft = state.timeLeft
-    var numberOfObsidianPossible = state.obsidian
-    for(i in 0 until timeLeft){
-        numberOfObsidianPossible += obsidianRobots + i
-    }
-    return numberOfObsidianPossible
 }
 
 fun computeNewStates(state: RobotState, bluePrint: BluePrint): List<RobotState> {
