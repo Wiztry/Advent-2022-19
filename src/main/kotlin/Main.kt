@@ -23,35 +23,35 @@ data class RobotState(
 )
 
 fun main() {
-    val inputFile = File("src/main/kotlin/input3")
+    val inputFile = File("src/main/kotlin/input1")
     val inputStrings = inputFile.readLines()
     val bluePrintList = inputStrings.map(::consumeString)
     val start = System.currentTimeMillis()
-    val geodeCounts = bluePrintList.map{
-        BFSRobots(it,24)
+    val geodeCounts24 = bluePrintList.map {
+        DFSRobots(it, 24)
     }
-    val qualitySum = geodeCounts.mapIndexed { index, i ->
-        i*(index+1)
+    val qualitySum = geodeCounts24.mapIndexed { index, i ->
+        i * (index + 1)
     }.sum()
     val part1 = System.currentTimeMillis() - start
-    val geodeCounts2 = bluePrintList.take(3).map{
-        BFSRobots(it, 32)
+    val geodeCounts32 = bluePrintList.take(3).map {
+        DFSRobots(it, 32)
     }
-    val result = geodeCounts2[0]*geodeCounts2[1]*geodeCounts2[2]
+    val result = geodeCounts32.reduce { acc, i -> acc * i }
     val part2 = System.currentTimeMillis() - part1 - start
-    println("Product of 3 first blueprints: $result")
     println("Sum of Quality Levels: $qualitySum")
+    println("Product of 3 first blueprints: $result")
     println("Time for part 1: $part1 ms")
     println("Time for part 2: $part2 ms")
 }
 
-fun BFSRobots(bluePrint: BluePrint, timeLimit: Int): Int {
+fun DFSRobots(bluePrint: BluePrint, timeLimit: Int): Int {
     val stack = Stack<RobotState>()
     stack.add(RobotState(1, 0, 0, 0, 0, 0, 0, 0, timeLimit))
     var bestGeodeCount = 0
     while (stack.isNotEmpty()) {
         val currentState = stack.pop()
-        if(calculateMaxGeodeNumberPossible(currentState) >= bestGeodeCount) {
+        if (calculateMaxGeodeNumberPossible(currentState) >= bestGeodeCount) {
             val newStates = computeNewStates(currentState, bluePrint)
             if (newStates.isEmpty()) {
                 if (currentState.geode > bestGeodeCount) {
@@ -64,11 +64,11 @@ fun BFSRobots(bluePrint: BluePrint, timeLimit: Int): Int {
     return bestGeodeCount
 }
 
-fun calculateMaxGeodeNumberPossible(state : RobotState): Int{
+fun calculateMaxGeodeNumberPossible(state: RobotState): Int {
     val geodeRobots = state.geodeRobots
     val timeLeft = state.timeLeft
     var numberOfGeodesPossible = state.geode
-    for(i in 0 until timeLeft){
+    for (i in 0 until timeLeft) {
         numberOfGeodesPossible += geodeRobots + i
     }
     return numberOfGeodesPossible
@@ -86,7 +86,12 @@ fun computeNewStates(state: RobotState, bluePrint: BluePrint): List<RobotState> 
     val newObsidianCount = state.obsidian + state.obsidianRobots
     val newGeodeCount = state.geode + state.geodeRobots
     val newStates = mutableListOf<RobotState>()
-    val maxOreCost = maxOf<Int>(bluePrint.oreRobotCostOre, bluePrint.clayRobotCostOre, bluePrint.obsidianRobotCostOre, bluePrint.geodeRobotCostOre)
+    val maxOreCost = maxOf<Int>(
+        bluePrint.oreRobotCostOre,
+        bluePrint.clayRobotCostOre,
+        bluePrint.obsidianRobotCostOre,
+        bluePrint.geodeRobotCostOre
+    )
     val maxClayCost = bluePrint.obsidianRobotCostClay
     val maxObsidianCost = bluePrint.geodeRobotCostObsidian
     if (state.timeLeft > 0) {
@@ -151,7 +156,7 @@ fun computeNewStates(state: RobotState, bluePrint: BluePrint): List<RobotState> 
                 )
             )
         }
-        if(state.ore < maxOreCost) {
+        if (state.ore < maxOreCost) {
             newStates.add(
                 RobotState(
                     state.oreRobots,
